@@ -15,30 +15,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 public class SpotifyService {
-    String clientId;
-    String clientSecret;
 
     String tokenApi = "https://accounts.spotify.com/api/token";
     String searchApi = "https://api.spotify.com/v1/search";
 
-    public void setCredentials(String clientId, String clientSecret) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
+    public SpotifyService() {
+
     }
 
-    public boolean hasCredentials(){
-        return clientId != null && clientSecret != null;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public String getToken() throws IOException, InterruptedException {
+    public String getToken(String clientId, String clientSecret) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
