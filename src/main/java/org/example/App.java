@@ -2,26 +2,21 @@ package org.example;
 
 import org.example.Data.Album;
 import org.example.Data.SearchResponse;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.example.Services.SpotifyService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Iterator;
 
 public class App {
     String title = "RetroRack";
     SpotifyService service;
 
-    //todo do not commit
-    String clientId = "";
-    //todo do not commit
-    String clientSecret = "";
-
     App(String[] args) {
         service = new SpotifyService();
-        service.setCredentials(clientId, clientSecret);
+//        service.setCredentials(clientId, clientSecret);
     }
 
 
@@ -33,35 +28,64 @@ public class App {
         });
     }
 
-    SearchResponse parseSearchServiceResponse(String body) {
-        SearchResponse searchResponse = new SearchResponse();
-
-        JSONObject jsonObject = new JSONObject(body);
-        searchResponse.setTotal(jsonObject.getJSONObject("albums").getInt("total"));
-        searchResponse.setOffset(jsonObject.getJSONObject("albums").getInt("offset"));
-        searchResponse.setLimit(jsonObject.getJSONObject("albums").getInt("limit"));
-        searchResponse.setNext(jsonObject.getJSONObject("albums").getString("next"));
-        searchResponse.setHref(jsonObject.getJSONObject("albums").getString("href"));
-
-        JSONArray jsonArray = jsonObject.getJSONObject("albums").getJSONArray("items");
-        Iterator iterator = jsonArray.iterator();
-        while (iterator.hasNext()) {
-            JSONObject next = (JSONObject) iterator.next();
-            Album album = new Album();
-            album.setName(next.getString("name"));
-            album.setAlbumType(next.getString("album_type"));
-            album.setUrl(next.getString("href"));
-            album.setUri(next.getString("uri"));
-            album.setReleaseDate(next.getString("release_date"));
-            album.setReleaseDatePrecision(next.getString("release_date_precision"));
-            album.setTotalTracks(next.getInt("total_tracks"));
-            searchResponse.getAlbums().add(album);
-        }
-
-        return searchResponse;
-    }
 
     public void show() {
+
+        JFrame jFrame = new JFrame(title);
+        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jFrame.setPreferredSize(new Dimension(800, 600));
+
+        String spotifyCredentialsMenuItemStr = "Spotify Credentials";
+        String mySQLCredentialsMenuItemStr = "MySQL Credentials";
+
+        JMenuBar jMenuBar = new JMenuBar();
+        JMenu jMenu = new JMenu("Settings");
+        JMenuItem spotifyMenuItem = new JMenuItem(spotifyCredentialsMenuItemStr);
+        JMenuItem mysqlMenuItem = new JMenuItem(mySQLCredentialsMenuItemStr);
+        spotifyMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDialog jDialog = new JDialog(jFrame, "test", true);
+                jDialog.setPreferredSize(new Dimension(300, 200));
+
+                JLabel clientIdLabel = new JLabel("Client Id: ");
+                JTextField clientIdTextField = new JTextField(service.getClientId(),20);
+                JPanel clientIdPanel = new JPanel(new FlowLayout());
+                clientIdPanel.add(clientIdLabel);
+                clientIdPanel.add(clientIdTextField);
+
+                JLabel clientSecretLabel = new JLabel("Client Secret: ");
+                JTextField clientSecretField = new JTextField(service.getClientSecret(), 20);
+                JPanel clientSecretPanel = new JPanel(new FlowLayout());
+                clientSecretPanel.add(clientSecretLabel);
+                clientSecretPanel.add(clientSecretField);
+
+                JButton saveCredentials = new JButton("Apply");
+                saveCredentials.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("saving credentials");
+                        service.setCredentials(clientIdTextField.getText(), clientSecretField.getText());
+                        jDialog.setVisible(false);
+                    }
+                });
+
+                JPanel credentialsBox = new JPanel();
+                credentialsBox.setLayout(new BoxLayout(credentialsBox, BoxLayout.PAGE_AXIS));
+                credentialsBox.add(clientIdPanel);
+                credentialsBox.add(clientSecretPanel);
+                credentialsBox.add(saveCredentials);
+
+                jDialog.add(credentialsBox);
+                jDialog.pack();
+                jDialog.setVisible(true);
+
+            }
+        });
+        jMenu.add(spotifyMenuItem);
+        jMenu.add(mysqlMenuItem);
+        jMenuBar.add(jMenu);
+
         JList jlist = new JList();
         jlist.setFixedCellWidth(200);
         JLabel jLabel = new JLabel("Search: ");
@@ -69,20 +93,21 @@ public class App {
         JButton jButton = new JButton("Go");
         jButton.addActionListener(e -> {
             try {
-                String token = service.getToken();
-                String q = textField.getText();
-                String response = service.search(token, q);
-                SearchResponse parsedResponse = parseSearchServiceResponse(response);
-                Object[] list = parsedResponse.getAlbums().stream().map(Album::getName).toList().toArray();
-                jlist.setListData(list);
+                if (service.hasCredentials()) {
+                    String token = service.getToken();
+                    String q = textField.getText();
+                    String response = service.search(token, q);
+                    SearchResponse parsedResponse = service.parseSearchServiceResponse(response);
+                    Object[] list = parsedResponse.getAlbums().stream().map(Album::getName).toList().toArray();
+                    jlist.setListData(list);
+                } else {
+                    JOptionPane.showMessageDialog(jFrame, "Enter spotify credentials in settings");
+                }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
 
-        JFrame f = new JFrame(title);
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.setPreferredSize(new Dimension(800, 600));
 
         // search bar
         JPanel top = new JPanel(new FlowLayout());
@@ -91,19 +116,21 @@ public class App {
         top.add(jButton);
 
         // list/detail view
-        JPanel bottomHalf = new JPanel();
-        bottomHalf.setLayout(new BoxLayout(bottomHalf, BoxLayout.X_AXIS));
-        bottomHalf.add(jlist);
+//        JPanel bottomHalf = new JPanel();
+//        bottomHalf.setLayout(new BoxLayout(bottomHalf, BoxLayout.X_AXIS));
+//        bottomHalf.add(jlist);
 
         // separate search from list/detail view
-        JPanel topBottom = new JPanel();
-        topBottom.setLayout(new BoxLayout(topBottom, BoxLayout.Y_AXIS));
-        topBottom.add(top);
-        topBottom.add(bottomHalf);
+//        JPanel topBottom = new JPanel();
+//        topBottom.setLayout(new BoxLayout(topBottom, BoxLayout.Y_AXIS));
+//        topBottom.add(top);
+//        topBottom.add(bottomHalf);
 
-        f.getContentPane().add(topBottom);
-        f.pack();
-        f.setVisible(true);
+        jFrame.setJMenuBar(jMenuBar);
+        jFrame.add(top, BorderLayout.PAGE_START);
+        jFrame.add(jlist, BorderLayout.LINE_START);
+        jFrame.pack();
+        jFrame.setVisible(true);
     }
 
 }
