@@ -20,16 +20,16 @@ public class SpotifyService {
     String searchApi = "https://api.spotify.com/v1/search";
 
     public SpotifyService() {
-
     }
 
     public String getToken(String clientId, String clientSecret) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
 
+        String postBody = "grant_type=client_credentials&client_id=" + clientId + "&client_secret=" + clientSecret;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(tokenApi))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials&client_id=" + clientId + "&client_secret=" + clientSecret))
+                .POST(HttpRequest.BodyPublishers.ofString(postBody))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -38,11 +38,11 @@ public class SpotifyService {
         String body = response.body();
 
 //        System.out.println(statusCode);
-//        System.out.println(body);
-
+        if (statusCode != 200) {
+            System.out.println(body);
+        }
 
         JSONObject jsonObject = new JSONObject(body);
-
         return jsonObject.getString("access_token");
     }
 

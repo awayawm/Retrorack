@@ -68,6 +68,7 @@ public class App {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("adding spotify creds to config service");
+
                         configService.getConfig().setSpotifyClientId(clientIdTextField.getText());
                         configService.getConfig().setSpotifyClientSecret(clientSecretField.getText());
 

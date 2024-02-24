@@ -28,4 +28,13 @@ public class Config {
     public void setSpotifyClientSecret(String spotifyClientSecret) {
         this.spotifyClientSecret = spotifyClientSecret;
     }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "spotifyClientId='" + spotifyClientId + '\'' +
+                ", spotifyClientSecret='" + spotifyClientSecret + '\'' +
+                ", configFilename='" + configFilename + '\'' +
+                '}';
+    }
 }

@@ -2,10 +2,7 @@ package org.example.Services;
 
 import org.example.Data.Config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,9 +30,10 @@ public class ConfigService {
 
     public boolean saveSpotifySettingsToConfig(String clientId, String clientSecret) {
         if (hasSpotifyCredentials()) {
-            try (PrintWriter writer = new PrintWriter(config.getConfigFilename(), StandardCharsets.UTF_8)) {
+            try (PrintWriter writer = new PrintWriter(
+                    new FileOutputStream(config.getConfigFilename(), false), true, StandardCharsets.UTF_8)) {
                 System.out.println("writing spotify creds to file");
-                writer.println(clientId + " " + clientSecret);
+                writer.print(clientId + " " + clientSecret);
                 return true;
             } catch (IOException ex) {
                 // do nothing
@@ -50,10 +48,15 @@ public class ConfigService {
     }
 
     boolean loadConfig() {
+        System.out.println("Loading config from file: " + config.getConfigFilename());
         try (Scanner scanner = new Scanner(new File(config.getConfigFilename()))) {
             scanner.useDelimiter(" ");
-            config.setSpotifyClientId(scanner.next());
-            config.setSpotifyClientSecret(scanner.next());
+
+            String clientId = scanner.next();
+            String clientSecret = scanner.next();
+
+            config.setSpotifyClientId(clientId);
+            config.setSpotifyClientSecret(clientSecret);
             return true;
         } catch (FileNotFoundException e) {
             // do nothing
