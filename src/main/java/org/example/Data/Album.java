@@ -1,29 +1,63 @@
 package org.example.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Album {
     List<Artist> artists;
+    List<AlbumImage> albumImages;
     String albumType;
     String name;
     String releaseDate;
     String releaseDatePrecision;
     int totalTracks;
     String uri;
-    String url;
+    String href;
+    String id;
+
+    public Album() {
+        artists = new ArrayList<>();
+        albumImages = new ArrayList<>();
+    }
 
     @Override
     public String toString() {
         return "Album{" +
                 "artists=" + artists +
+                ", albumImages=" + albumImages +
                 ", albumType='" + albumType + '\'' +
                 ", name='" + name + '\'' +
                 ", releaseDate='" + releaseDate + '\'' +
                 ", releaseDatePrecision='" + releaseDatePrecision + '\'' +
                 ", totalTracks=" + totalTracks +
                 ", uri='" + uri + '\'' +
-                ", url='" + url + '\'' +
+                ", href='" + href + '\'' +
+                ", id='" + id + '\'' +
                 '}';
+    }
+
+    public List<AlbumImage> getAlbumImages() {
+        return albumImages;
+    }
+
+    public void setAlbumImages(List<AlbumImage> albumImages) {
+        this.albumImages = albumImages;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public List<Artist> getArtists() {
@@ -82,11 +116,4 @@ public class Album {
         this.uri = uri;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 }

@@ -1,6 +1,8 @@
 package org.example.Services;
 
 import org.example.Data.Album;
+import org.example.Data.AlbumImage;
+import org.example.Data.Artist;
 import org.example.Data.SearchResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,7 +14,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class SpotifyService {
 
@@ -49,7 +53,7 @@ public class SpotifyService {
     public String search(String token, String q) throws IOException, InterruptedException {
         String search = URLEncoder.encode(q, StandardCharsets.UTF_8);
         String url = searchApi + "?q=" + search + "&type=album";
-        System.out.println(url);
+//        System.out.println(url);
 
         HttpClient client = HttpClient.newHttpClient();
 
@@ -62,7 +66,7 @@ public class SpotifyService {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         String body = response.body();
-        System.out.println(body);
+//        System.out.println(body);
 
         return body;
     }
@@ -77,6 +81,7 @@ public class SpotifyService {
         searchResponse.setNext(jsonObject.getJSONObject("albums").getString("next"));
         searchResponse.setHref(jsonObject.getJSONObject("albums").getString("href"));
 
+
         JSONArray jsonArray = jsonObject.getJSONObject("albums").getJSONArray("items");
         Iterator iterator = jsonArray.iterator();
         while (iterator.hasNext()) {
@@ -84,11 +89,39 @@ public class SpotifyService {
             Album album = new Album();
             album.setName(next.getString("name"));
             album.setAlbumType(next.getString("album_type"));
-            album.setUrl(next.getString("href"));
+            album.setHref(next.getString("href"));
             album.setUri(next.getString("uri"));
             album.setReleaseDate(next.getString("release_date"));
             album.setReleaseDatePrecision(next.getString("release_date_precision"));
             album.setTotalTracks(next.getInt("total_tracks"));
+
+
+            List<AlbumImage> images = new ArrayList<>();
+            JSONArray imagesArray = next.getJSONArray("images");
+            Iterator imagesIterator = imagesArray.iterator();
+            while (imagesIterator.hasNext()) {
+                JSONObject nextImage = (JSONObject) imagesIterator.next();
+                AlbumImage albumImage = new AlbumImage();
+                albumImage.setUrl(nextImage.getString("url"));
+                albumImage.setHeight(nextImage.getInt("height"));
+                albumImage.setWidth(nextImage.getInt("width"));
+                images.add(albumImage);
+            }
+            album.getAlbumImages().addAll(images);
+
+            List<Artist> artists = new ArrayList<>();
+            JSONArray artistsArray = next.getJSONArray("artists");
+            Iterator artistsIterator = artistsArray.iterator();
+            while (artistsIterator.hasNext()) {
+                JSONObject nextArtist = (JSONObject) artistsIterator.next();
+                Artist artist = new Artist();
+                artist.setId(nextArtist.getString("id"));
+                artist.setName(nextArtist.getString("name"));
+                artist.setUri(nextArtist.getString("uri"));
+                artist.setHref(nextArtist.getString("href"));
+                artists.add(artist);
+            }
+            album.getArtists().addAll(artists);
             searchResponse.getAlbums().add(album);
         }
 

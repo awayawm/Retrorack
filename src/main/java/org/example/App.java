@@ -3,6 +3,7 @@ package org.example;
 import org.example.Data.Album;
 import org.example.Data.SearchResponse;
 import org.example.Services.ConfigService;
+import org.example.Services.DetailService;
 import org.example.Services.SpotifyService;
 
 import javax.swing.*;
@@ -18,11 +19,13 @@ public class App {
     String configFile = "config.dat";
     SpotifyService spotifyService;
     ConfigService configService;
+    DetailService detailService;
 
 
     App(String[] args) {
         configService = new ConfigService(configFile);
         spotifyService = new SpotifyService();
+        detailService = new DetailService();
     }
 
 
@@ -37,6 +40,8 @@ public class App {
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setPreferredSize(new Dimension(800, 600));
 
+
+        // Menu Setup
         String spotifyCredentialsMenuItemStr = "Spotify Credentials";
         String mySQLCredentialsMenuItemStr = "MySQL Credentials";
 
@@ -99,15 +104,24 @@ public class App {
         jMenu.add(mysqlMenuItem);
         jMenuBar.add(jMenu);
 
-        JList jlist = new JList();
+        // Information Detail
+        JPanel detailPanel = new JPanel();
+        JLabel albumImageLabel = new JLabel();
+        detailPanel.add(albumImageLabel);
+
+
+        // Selection List
+        DefaultListModel defaultListModel = new DefaultListModel();
+        JList jlist = new JList(defaultListModel);
         jlist.setFixedCellWidth(200);
         jlist.setLayoutOrientation(JList.VERTICAL);
+        JScrollPane listScroller = new JScrollPane(jlist);
         jlist.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting()) {
-                    System.out.println(e.getLastIndex());
-                    System.out.println(e.getFirstIndex());
+                    detailService.setIndex(detailService.getIndex() == e.getLastIndex() ? e.getFirstIndex() : e.getLastIndex());
+                    detailService.updateDetails(albumImageLabel);
                 }
             }
         });
@@ -126,8 +140,14 @@ public class App {
                     String q = textField.getText();
                     String response = spotifyService.search(token, q);
                     SearchResponse parsedResponse = spotifyService.parseSearchServiceResponse(response);
-                    Object[] list = parsedResponse.getAlbums().stream().map(Album::getName).toList().toArray();
-                    jlist.setListData(list);
+
+                    defaultListModel.clear();
+                    defaultListModel.addAll(parsedResponse.getAlbums().stream().map(Album::getName).toList());
+                    detailService.setAlbums(parsedResponse.getAlbums());
+                    detailService.setIndex(0);
+                    jlist.setSelectedIndex(0);
+                    detailService.updateDetails(albumImageLabel);
+
                 } else {
                     JOptionPane.showMessageDialog(jFrame, "Enter spotify credentials in settings");
                 }
@@ -145,7 +165,8 @@ public class App {
 
         jFrame.setJMenuBar(jMenuBar);
         jFrame.add(top, BorderLayout.PAGE_START);
-        jFrame.add(jlist, BorderLayout.LINE_START);
+        jFrame.add(listScroller, BorderLayout.LINE_START);
+        jFrame.add(detailPanel, BorderLayout.CENTER);
         jFrame.pack();
         jFrame.setVisible(true);
     }
