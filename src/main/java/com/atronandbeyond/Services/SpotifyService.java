@@ -22,6 +22,7 @@ public class SpotifyService {
 
     String tokenApi = "https://accounts.spotify.com/api/token";
     String searchApi = "https://api.spotify.com/v1/search";
+    String albumsApi = "https://api.spotify.com/v1/albums/";
 
     public SpotifyService() {
     }
@@ -72,7 +73,7 @@ public class SpotifyService {
     }
 
     public String getAlbumById(String token, String id) throws IOException, InterruptedException {
-        String url = searchApi + "/" + id;
+        String url = albumsApi + id;
         System.out.println(url);
 
         HttpClient client = HttpClient.newHttpClient();

@@ -55,18 +55,20 @@ public class DBConnection {
     }
 
     public static Object[][] getAlbums(Config config) {
-        try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
+        try (Connection conn = DriverManager.getConnection(
+                getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
             Statement statement = conn.createStatement();
             ResultSet cntRs = statement.executeQuery("select count(*) from " + ALBUMS_TABLE);
             cntRs.next();
             int count = cntRs.getInt(1);
             System.out.println("count: " + count);
 
-            PreparedStatement ps = conn.prepareStatement("select * from " + ALBUMS_TABLE);
+            PreparedStatement ps = conn.prepareStatement("select * from " + ALBUMS_TABLE + " order by createdate desc");
             ResultSet rs = ps.executeQuery();
 
 
-            Object[][] rows = new Object[count][5];
+            int NUM_COLUMNS=5; // adjust if columns are added to ALBUMS_TABLE
+            Object[][] rows = new Object[count][NUM_COLUMNS];
             int rowCnt = 0;
             while (rs.next()) {
                 rows[rowCnt++] = new Object[]{rs.getString("id"), rs.getString("name"), rs.getString("releaseDate"), rs.getInt("totaltracks"), rs.getString("createDate")};

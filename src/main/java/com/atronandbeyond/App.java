@@ -13,12 +13,13 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 public class App {
     String title = "RetroRack";
     String configFile = "config.dat";
+    int WIDTH = 1024;
+    int HEIGHT = 768;
     SpotifyService spotifyService;
     ConfigService configService;
     DetailService detailService;
@@ -31,7 +32,7 @@ public class App {
     }
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new App(args).show());
     }
 
@@ -40,18 +41,23 @@ public class App {
 
         JFrame jFrame = new JFrame(title);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jFrame.setPreferredSize(new Dimension(800, 600));
+        jFrame.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
 
         // Menu Setup
+        String settingsMenuStr = "Settings";
         String spotifyCredentialsMenuItemStr = "Spotify Credentials";
         String mySQLCredentialsMenuItemStr = "MySQL Credentials";
-        String AlbumsMenuItemStr = "Albums";
+        String settingsExistMenuItemStr = "Exit";
+        String AlbumsMenuStr = "Albums";
+        String AlbumsMenuItemStr = "View All Albums";
 
         JMenuBar jMenuBar = new JMenuBar();
-        JMenu jMenu = new JMenu("Settings");
+        JMenu jSettingsMenu = new JMenu(settingsMenuStr);
+        JMenu jAlbumsMenu = new JMenu(AlbumsMenuStr);
         JMenuItem spotifyMenuItem = new JMenuItem(spotifyCredentialsMenuItemStr);
         JMenuItem mysqlMenuItem = new JMenuItem(mySQLCredentialsMenuItemStr);
+        JMenuItem exitMenuItem = new JMenuItem(settingsExistMenuItemStr);
         JMenuItem AlbumsMenuItem = new JMenuItem(AlbumsMenuItemStr);
         spotifyMenuItem.addActionListener(new ActionListener() {
             @Override
@@ -194,10 +200,20 @@ public class App {
             }
         });
 
-        jMenu.add(spotifyMenuItem);
-        jMenu.add(mysqlMenuItem);
-        jMenuBar.add(jMenu);
-        jMenuBar.add(AlbumsMenuItem);
+        exitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        jSettingsMenu.add(spotifyMenuItem);
+        jSettingsMenu.add(mysqlMenuItem);
+        jSettingsMenu.addSeparator();
+        jSettingsMenu.add(exitMenuItem);
+        jAlbumsMenu.add(AlbumsMenuItem);
+        jMenuBar.add(jSettingsMenu);
+        jMenuBar.add(jAlbumsMenu);
 
         // Information Detail
         JLabel albumImageLabel = new JLabel();
@@ -306,5 +322,4 @@ public class App {
         jFrame.pack();
         jFrame.setVisible(true);
     }
-
 }
