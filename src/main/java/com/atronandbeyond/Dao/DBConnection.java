@@ -1,5 +1,8 @@
 package com.atronandbeyond.Dao;
 
+import com.atronandbeyond.Data.Album;
+import com.atronandbeyond.Data.Config;
+
 import java.sql.*;
 
 public class DBConnection {
@@ -14,21 +17,39 @@ public class DBConnection {
 
     public static boolean testConnection(String host, String user, String password) {
         try (Connection conn = DriverManager.getConnection(getConnectionUrl(host), user, password);
-             Statement statement = conn.createStatement();
-             ResultSet rs = statement.executeQuery("select * from " + ALBUMS_TABLE)) {
+             PreparedStatement ps = conn.prepareStatement("select * from " + ALBUMS_TABLE);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-//                long id = rs.getLong("ID");
-//                String firstName = rs.getString("FIRST_NAME");
-//                String lastName = rs.getString("LAST_NAME");
-                // Process the extracted data...
+                System.out.println(rs.getString("id"));
             }
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exceptions
         }
         return false;
     }
 
+    public static void addAlbum(Album album, Config config) throws Exception {
+        String id = album.getId();
+        String name = album.getName();
+        String releaseDate = album.getReleaseDate();
+        int totalTracks = album.getTotalTracks();
+
+        System.out.println("connecting to " + getConnectionUrl(config.getMysqlHost()));
+
+        try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
+            PreparedStatement ps = conn.prepareStatement("insert into " + ALBUMS_TABLE + " (id, name, ReleaseDate, totaltracks) values (?, ?, ?, ?)");
+            ps.setString(1, id);
+            ps.setString(2, name);
+            ps.setString(3, releaseDate);
+            ps.setInt(4, totalTracks);
+
+            System.out.println(ps);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }
+    }
 }

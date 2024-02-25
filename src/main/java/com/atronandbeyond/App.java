@@ -247,8 +247,21 @@ public class App {
             }
         });
 
+        // add to database button
         JPanel bottomPanel = new JPanel();
         JButton addToDatabaseButton = new JButton("Add to database");
+        addToDatabaseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    DBConnection.addAlbum(detailService.getCurrentAlbum(), configService.getConfig());
+                    JOptionPane.showMessageDialog(jFrame, "Added to database: " + detailService.getCurrentAlbum().getId());
+                } catch(Exception ex){
+                    JOptionPane.showMessageDialog(jFrame, "Failed to add!", "Could not add to MySQL", JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        });
         bottomPanel.add(addToDatabaseButton);
 
         // search bar
