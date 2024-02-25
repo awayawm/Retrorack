@@ -1,9 +1,9 @@
-package org.example.Services;
+package com.atronandbeyond.Services;
 
-import org.example.Data.Album;
-import org.example.Data.AlbumImage;
-import org.example.Data.Artist;
-import org.example.Data.SearchResponse;
+import com.atronandbeyond.Data.SearchResponse;
+import com.atronandbeyond.Data.Album;
+import com.atronandbeyond.Data.AlbumImage;
+import com.atronandbeyond.Data.Artist;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

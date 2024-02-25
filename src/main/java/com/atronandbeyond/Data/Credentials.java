@@ -1,4 +1,4 @@
-package org.example.Data;
+package com.atronandbeyond.Data;
 
 public class Credentials {
     String accessToken;

@@ -1,6 +1,6 @@
-package org.example.Services;
+package com.atronandbeyond.Services;
 
-import org.example.Data.Config;
+import com.atronandbeyond.Data.Config;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -28,23 +28,23 @@ public class ConfigService {
         return Files.exists(Paths.get(config.getConfigFilename()));
     }
 
-    public boolean saveSpotifySettingsToConfig(String clientId, String clientSecret) {
-        if (hasSpotifyCredentials()) {
+    public boolean saveConfigToDisk() {
+//        if (hasSpotifyCredentials()) {
             try (PrintWriter writer = new PrintWriter(
                     new FileOutputStream(config.getConfigFilename(), false), true, StandardCharsets.UTF_8)) {
-                System.out.println("writing spotify creds to file");
-                writer.print(clientId + " " + clientSecret);
+                System.out.println("writing config to file");
+                writer.print(config.getSpotifyClientId() + " " + config.getSpotifyClientSecret() + " " + config.getMysqlHost() + " " + config.getMysqlUsername() + " " + config.getMysqlPassword());
                 return true;
             } catch (IOException ex) {
                 // do nothing
-                System.out.println("couldn't write spotify creds to file");
+                System.out.println("couldn't write config to file");
                 return false;
             }
-        } else {
-            System.out.println("no spotify creds in config");
-            System.out.println(config);
-            return false;
-        }
+//        } else {
+//            System.out.println("no spotify creds in config");
+//            System.out.println(config);
+//            return false;
+//        }
     }
 
     boolean loadConfig() {
@@ -54,9 +54,16 @@ public class ConfigService {
 
             String clientId = scanner.next();
             String clientSecret = scanner.next();
+            String mysqlHost = scanner.next();
+            String mysqlUser = scanner.next();
+            String mySqlPass = scanner.next();
 
             config.setSpotifyClientId(clientId);
             config.setSpotifyClientSecret(clientSecret);
+            config.setMysqlHost(mysqlHost);
+            config.setMysqlUsername(mysqlUser);
+            config.setMysqlPassword(mySqlPass);
+
             return true;
         } catch (FileNotFoundException e) {
             // do nothing

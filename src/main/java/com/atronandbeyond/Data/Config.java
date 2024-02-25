@@ -1,9 +1,37 @@
-package org.example.Data;
+package com.atronandbeyond.Data;
 
 public class Config {
     String spotifyClientId;
     String spotifyClientSecret;
     String configFilename;
+
+    String mysqlUsername;
+    String mysqlPassword;
+    String mysqlHost;
+
+    public String getMysqlUsername() {
+        return mysqlUsername;
+    }
+
+    public void setMysqlUsername(String mysqlUsername) {
+        this.mysqlUsername = mysqlUsername;
+    }
+
+    public String getMysqlPassword() {
+        return mysqlPassword;
+    }
+
+    public void setMysqlPassword(String mysqlPassword) {
+        this.mysqlPassword = mysqlPassword;
+    }
+
+    public String getMysqlHost() {
+        return mysqlHost;
+    }
+
+    public void setMysqlHost(String mysqlHost) {
+        this.mysqlHost = mysqlHost;
+    }
 
     public String getConfigFilename() {
         return configFilename;
@@ -35,6 +63,9 @@ public class Config {
                 "spotifyClientId='" + spotifyClientId + '\'' +
                 ", spotifyClientSecret='" + spotifyClientSecret + '\'' +
                 ", configFilename='" + configFilename + '\'' +
+                ", mysqlUsername='" + mysqlUsername + '\'' +
+                ", mysqlPassword='" + mysqlPassword + '\'' +
+                ", mysqlHost='" + mysqlHost + '\'' +
                 '}';
     }
 }

@@ -1,6 +1,6 @@
-package org.example.Services;
+package com.atronandbeyond.Services;
 
-import org.example.Data.Album;
+import com.atronandbeyond.Data.Album;
 
 import javax.swing.*;
 import java.awt.*;

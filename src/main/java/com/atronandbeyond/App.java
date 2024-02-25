@@ -1,10 +1,11 @@
-package org.example;
+package com.atronandbeyond;
 
-import org.example.Data.Album;
-import org.example.Data.SearchResponse;
-import org.example.Services.ConfigService;
-import org.example.Services.DetailService;
-import org.example.Services.SpotifyService;
+import com.atronandbeyond.Dao.DBConnection;
+import com.atronandbeyond.Data.Album;
+import com.atronandbeyond.Data.SearchResponse;
+import com.atronandbeyond.Services.ConfigService;
+import com.atronandbeyond.Services.DetailService;
+import com.atronandbeyond.Services.SpotifyService;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -52,7 +53,7 @@ public class App {
         spotifyMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JDialog jDialog = new JDialog(jFrame, "test", true);
+                JDialog jDialog = new JDialog(jFrame, "Spotify Credentials", true);
                 jDialog.setPreferredSize(new Dimension(300, 200));
 
                 JLabel clientIdLabel = new JLabel("Client Id: ");
@@ -79,7 +80,7 @@ public class App {
 
                         if (saveCredsCheckbox.isSelected()) {
                             //todo save creds to file
-                            configService.saveSpotifySettingsToConfig(clientIdTextField.getText(), clientSecretField.getText());
+                            configService.saveConfigToDisk();
                         }
 
                         jDialog.setVisible(false);
@@ -97,6 +98,76 @@ public class App {
                 jDialog.pack();
                 jDialog.setVisible(true);
 
+            }
+        });
+
+        mysqlMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDialog jDialog = new JDialog(jFrame, "MySQL Credentials", true);
+                jDialog.setPreferredSize(new Dimension(300, 200));
+
+                JPanel mysqlBox = new JPanel();
+                mysqlBox.setLayout(new BoxLayout(mysqlBox, BoxLayout.PAGE_AXIS));
+
+                JButton testMysqlButton = new JButton("Test Connection");
+                JButton applyMysqlButton = new JButton("Apply");
+
+                JPanel mysqlSettingsPanel = new JPanel(new GridLayout(0, 2));
+                JTextField hostnameTextfield = new JTextField(configService.getConfig().getMysqlHost(), 20);
+                JTextField usernameField = new JTextField(configService.getConfig().getMysqlUsername(), 20);
+                JTextField passwordField = new JTextField(configService.getConfig().getMysqlPassword(), 20);
+
+                mysqlSettingsPanel.add(new JLabel("Hostname: "));
+                mysqlSettingsPanel.add(hostnameTextfield);
+
+                mysqlSettingsPanel.add(new JLabel("Username: "));
+                mysqlSettingsPanel.add(usernameField);
+
+                mysqlSettingsPanel.add(new JLabel("Password: "));
+                mysqlSettingsPanel.add(passwordField);
+
+                JCheckBox saveCredsCheckbox = new JCheckBox("Save to file");
+
+                mysqlBox.add(mysqlSettingsPanel);
+                mysqlBox.add(saveCredsCheckbox);
+                mysqlBox.add(testMysqlButton);
+                mysqlBox.add(applyMysqlButton);
+
+                testMysqlButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("adding mysql creds to config service");
+
+                        configService.getConfig().setMysqlHost(hostnameTextfield.getText());
+                        configService.getConfig().setMysqlUsername(usernameField.getText());
+                        configService.getConfig().setMysqlPassword(passwordField.getText());
+
+                        boolean result = DBConnection.testConnection(hostnameTextfield.getText(), usernameField.getText(), passwordField.getText());
+                        if (result) {
+                            JOptionPane.showMessageDialog(jDialog, "Successful connection test!");
+                        } else {
+                            JOptionPane.showMessageDialog(jDialog, "Connection Error", "Failed Connection test :(", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+
+                applyMysqlButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        configService.getConfig().setMysqlHost(hostnameTextfield.getText());
+                        configService.getConfig().setMysqlUsername(usernameField.getText());
+                        configService.getConfig().setMysqlPassword(passwordField.getText());
+                        if (saveCredsCheckbox.isSelected()) {
+                            configService.saveConfigToDisk();
+                        }
+                        jDialog.setVisible(false);
+                    }
+                });
+
+                jDialog.add(mysqlBox);
+                jDialog.pack();
+                jDialog.setVisible(true);
             }
         });
 
@@ -176,6 +247,9 @@ public class App {
             }
         });
 
+        JPanel bottomPanel = new JPanel();
+        JButton addToDatabaseButton = new JButton("Add to database");
+        bottomPanel.add(addToDatabaseButton);
 
         // search bar
         JPanel top = new JPanel(new FlowLayout());
@@ -187,6 +261,7 @@ public class App {
         jFrame.add(top, BorderLayout.PAGE_START);
         jFrame.add(listScroller, BorderLayout.LINE_START);
         jFrame.add(detailPanelVertical, BorderLayout.CENTER);
+        jFrame.add(bottomPanel, BorderLayout.PAGE_END);
         jFrame.pack();
         jFrame.setVisible(true);
     }
