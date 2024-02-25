@@ -66,7 +66,7 @@ public class SpotifyService {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         String body = response.body();
-//        System.out.println(body);
+        System.out.println(body);
 
         return body;
     }
@@ -94,6 +94,7 @@ public class SpotifyService {
             album.setReleaseDate(next.getString("release_date"));
             album.setReleaseDatePrecision(next.getString("release_date_precision"));
             album.setTotalTracks(next.getInt("total_tracks"));
+            album.setId(next.getString("id"));
 
 
             List<AlbumImage> images = new ArrayList<>();

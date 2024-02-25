@@ -3,6 +3,7 @@ package org.example.Services;
 import org.example.Data.Album;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -35,11 +36,17 @@ public class DetailService {
         return index;
     }
 
-    public void updateDetails(JLabel albumImageLabel) {
+    public void updateDetails(JLabel albumImageLabel, JLabel albumNameLabel, JLabel releaseDateLabel, JLabel totalTracksLabel, JLabel albumIdLabel) {
         System.out.println(getCurrentAlbum());
         String imageUrl = getCurrentAlbum().getAlbumImages().stream().filter(x -> x.getWidth() == 300).toList().get(0).getUrl();
+        albumNameLabel.setText(getCurrentAlbum().getName());
+        releaseDateLabel.setText(getCurrentAlbum().getReleaseDate());
+        totalTracksLabel.setText(String.valueOf(getCurrentAlbum().getTotalTracks()));
+        albumIdLabel.setText(getCurrentAlbum().getId());
         try {
             albumImageLabel.setIcon(new ImageIcon(new URL(imageUrl).openStream().readAllBytes()));
+            albumImageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         } catch (IOException ex) {
             System.out.println("could not read image: " + imageUrl);
         }

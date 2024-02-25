@@ -105,10 +105,27 @@ public class App {
         jMenuBar.add(jMenu);
 
         // Information Detail
-        JPanel detailPanel = new JPanel();
         JLabel albumImageLabel = new JLabel();
-        detailPanel.add(albumImageLabel);
+        JLabel albumNameLabel = new JLabel();
+        JLabel releaseDateLabel = new JLabel();
+        JLabel totalTracksLabel = new JLabel();
+        JLabel albumIdLabel = new JLabel();
 
+        JPanel informationGird = new JPanel(new GridLayout(0, 2));
+
+        informationGird.add(new JLabel("id"));
+        informationGird.add(albumIdLabel);
+        informationGird.add(new JLabel("name"));
+        informationGird.add(albumNameLabel);
+        informationGird.add(new JLabel("releaseDate"));
+        informationGird.add(releaseDateLabel);
+        informationGird.add(new JLabel("totalTracks"));
+        informationGird.add(totalTracksLabel);
+
+        JPanel detailPanelVertical = new JPanel();
+        detailPanelVertical.setLayout(new BoxLayout(detailPanelVertical, BoxLayout.PAGE_AXIS));
+        detailPanelVertical.add(albumImageLabel);
+        detailPanelVertical.add(informationGird);
 
         // Selection List
         DefaultListModel defaultListModel = new DefaultListModel();
@@ -121,7 +138,7 @@ public class App {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting()) {
                     detailService.setIndex(detailService.getIndex() == e.getLastIndex() ? e.getFirstIndex() : e.getLastIndex());
-                    detailService.updateDetails(albumImageLabel);
+                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel);
                 }
             }
         });
@@ -146,7 +163,7 @@ public class App {
                     detailService.setAlbums(parsedResponse.getAlbums());
                     detailService.setIndex(0);
                     jlist.setSelectedIndex(0);
-                    detailService.updateDetails(albumImageLabel);
+                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel);
 
                 } else {
                     JOptionPane.showMessageDialog(jFrame, "Enter spotify credentials in settings");
@@ -166,7 +183,7 @@ public class App {
         jFrame.setJMenuBar(jMenuBar);
         jFrame.add(top, BorderLayout.PAGE_START);
         jFrame.add(listScroller, BorderLayout.LINE_START);
-        jFrame.add(detailPanel, BorderLayout.CENTER);
+        jFrame.add(detailPanelVertical, BorderLayout.CENTER);
         jFrame.pack();
         jFrame.setVisible(true);
     }

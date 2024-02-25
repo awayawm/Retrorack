@@ -12,7 +12,7 @@ public class SearchResponse {
     String href;
     List<Album> albums;
 
-    public SearchResponse(){
+    public SearchResponse() {
         albums = new ArrayList<>();
     }
 
