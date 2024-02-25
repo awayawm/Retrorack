@@ -7,6 +7,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DetailService {
     int index = 0;
@@ -36,13 +37,14 @@ public class DetailService {
         return index;
     }
 
-    public void updateDetails(JLabel albumImageLabel, JLabel albumNameLabel, JLabel releaseDateLabel, JLabel totalTracksLabel, JLabel albumIdLabel) {
+    public void updateDetails(JLabel albumImageLabel, JLabel albumNameLabel, JLabel releaseDateLabel, JLabel totalTracksLabel, JLabel albumIdLabel, JLabel artistsLabel) {
         System.out.println(getCurrentAlbum());
         String imageUrl = getCurrentAlbum().getAlbumImages().stream().filter(x -> x.getWidth() == 300).toList().get(0).getUrl();
         albumNameLabel.setText(getCurrentAlbum().getName());
         releaseDateLabel.setText(getCurrentAlbum().getReleaseDate());
         totalTracksLabel.setText(String.valueOf(getCurrentAlbum().getTotalTracks()));
         albumIdLabel.setText(getCurrentAlbum().getId());
+        artistsLabel.setText(getCurrentAlbum().getArtists().stream().map(x->x.getName() + " (" + x.getId() + ")").collect(Collectors.joining(", ")));
         try {
             albumImageLabel.setIcon(new ImageIcon(new URL(imageUrl).openStream().readAllBytes()));
             albumImageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

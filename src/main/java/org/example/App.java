@@ -110,6 +110,7 @@ public class App {
         JLabel releaseDateLabel = new JLabel();
         JLabel totalTracksLabel = new JLabel();
         JLabel albumIdLabel = new JLabel();
+        JLabel artistsLabel = new JLabel();
 
         JPanel informationGird = new JPanel(new GridLayout(0, 2));
 
@@ -121,6 +122,8 @@ public class App {
         informationGird.add(releaseDateLabel);
         informationGird.add(new JLabel("totalTracks"));
         informationGird.add(totalTracksLabel);
+        informationGird.add(new JLabel("Artists"));
+        informationGird.add(artistsLabel);
 
         JPanel detailPanelVertical = new JPanel();
         detailPanelVertical.setLayout(new BoxLayout(detailPanelVertical, BoxLayout.PAGE_AXIS));
@@ -138,7 +141,7 @@ public class App {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting()) {
                     detailService.setIndex(detailService.getIndex() == e.getLastIndex() ? e.getFirstIndex() : e.getLastIndex());
-                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel);
+                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel, artistsLabel);
                 }
             }
         });
@@ -163,7 +166,7 @@ public class App {
                     detailService.setAlbums(parsedResponse.getAlbums());
                     detailService.setIndex(0);
                     jlist.setSelectedIndex(0);
-                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel);
+                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel, artistsLabel);
 
                 } else {
                     JOptionPane.showMessageDialog(jFrame, "Enter spotify credentials in settings");

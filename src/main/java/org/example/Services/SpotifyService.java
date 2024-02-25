@@ -71,6 +71,26 @@ public class SpotifyService {
         return body;
     }
 
+    public String getAlbumById(String token, String id) throws IOException, InterruptedException {
+        String url = searchApi + "/" + id;
+        System.out.println(url);
+
+        HttpClient client = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        String body = response.body();
+        System.out.println(body);
+
+        return body;
+    }
+
     public SearchResponse parseSearchServiceResponse(String body) {
         SearchResponse searchResponse = new SearchResponse();
 
