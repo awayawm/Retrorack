@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class App {
     String title = "RetroRack";
@@ -45,11 +46,13 @@ public class App {
         // Menu Setup
         String spotifyCredentialsMenuItemStr = "Spotify Credentials";
         String mySQLCredentialsMenuItemStr = "MySQL Credentials";
+        String AlbumsMenuItemStr = "Albums";
 
         JMenuBar jMenuBar = new JMenuBar();
         JMenu jMenu = new JMenu("Settings");
         JMenuItem spotifyMenuItem = new JMenuItem(spotifyCredentialsMenuItemStr);
         JMenuItem mysqlMenuItem = new JMenuItem(mySQLCredentialsMenuItemStr);
+        JMenuItem AlbumsMenuItem = new JMenuItem(AlbumsMenuItemStr);
         spotifyMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -171,9 +174,30 @@ public class App {
             }
         });
 
+        AlbumsMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDialog jDialog = new JDialog(jFrame, "Album Table", true);
+                jDialog.setPreferredSize(new Dimension(1200, 600));
+
+                String[] columnNames = {"id", "name", "ReleaseDate", "totaltracks", "createDate"};
+                Object[][] data = DBConnection.getAlbums(configService.getConfig());
+                JTable table = new JTable(data, columnNames);
+                jDialog.setTitle(DBConnection.getNumberAlbums(configService.getConfig()) + " Albums in DB");
+
+                JScrollPane scrollPane = new JScrollPane(table);
+                table.setFillsViewportHeight(true);
+
+                jDialog.add(scrollPane);
+                jDialog.pack();
+                jDialog.setVisible(true);
+            }
+        });
+
         jMenu.add(spotifyMenuItem);
         jMenu.add(mysqlMenuItem);
         jMenuBar.add(jMenu);
+        jMenuBar.add(AlbumsMenuItem);
 
         // Information Detail
         JLabel albumImageLabel = new JLabel();
@@ -243,6 +267,8 @@ public class App {
                     JOptionPane.showMessageDialog(jFrame, "Enter spotify credentials in settings");
                 }
             } catch (Exception ex) {
+                JOptionPane.showMessageDialog(jFrame, "Could not connect to Spotify", "Error with Spotify API", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
                 throw new RuntimeException(ex);
             }
         });
@@ -256,8 +282,10 @@ public class App {
                 try {
                     DBConnection.addAlbum(detailService.getCurrentAlbum(), configService.getConfig());
                     JOptionPane.showMessageDialog(jFrame, "Added to database: " + detailService.getCurrentAlbum().getId());
-                } catch(Exception ex){
-                    JOptionPane.showMessageDialog(jFrame, "Failed to add!", "Could not add to MySQL", JOptionPane.ERROR_MESSAGE);
+                } catch (SQLIntegrityConstraintViolationException ex) {
+                    JOptionPane.showMessageDialog(jFrame, "Id already exists", "Failed to add!", JOptionPane.WARNING_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(jFrame, "Could not add to MySQL", "Failed to add!", JOptionPane.ERROR_MESSAGE);
                 }
 
             }

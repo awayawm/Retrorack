@@ -4,6 +4,7 @@ import com.atronandbeyond.Data.Album;
 import com.atronandbeyond.Data.Config;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DBConnection {
     private static Connection conn;
@@ -49,7 +50,43 @@ public class DBConnection {
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new Exception(e);
+            throw e;
         }
+    }
+
+    public static Object[][] getAlbums(Config config) {
+        try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
+            Statement statement = conn.createStatement();
+            ResultSet cntRs = statement.executeQuery("select count(*) from " + ALBUMS_TABLE);
+            cntRs.next();
+            int count = cntRs.getInt(1);
+            System.out.println("count: " + count);
+
+            PreparedStatement ps = conn.prepareStatement("select * from " + ALBUMS_TABLE);
+            ResultSet rs = ps.executeQuery();
+
+
+            Object[][] rows = new Object[count][5];
+            int rowCnt = 0;
+            while (rs.next()) {
+                rows[rowCnt++] = new Object[]{rs.getString("id"), rs.getString("name"), rs.getString("releaseDate"), rs.getInt("totaltracks"), rs.getString("createDate")};
+            }
+            return rows;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int getNumberAlbums(Config config) {
+        try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
+            Statement statement = conn.createStatement();
+            ResultSet cntRs = statement.executeQuery("select count(*) from " + ALBUMS_TABLE);
+            cntRs.next();
+            return cntRs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
