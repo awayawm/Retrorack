@@ -1,6 +1,7 @@
 package com.atronandbeyond.Services;
 
 import com.atronandbeyond.Data.Album;
+import com.atronandbeyond.Data.Artist;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,14 +38,21 @@ public class DetailService {
         return index;
     }
 
-    public void updateDetails(JLabel albumImageLabel, JLabel albumNameLabel, JLabel releaseDateLabel, JLabel totalTracksLabel, JLabel albumIdLabel, JLabel artistsLabel) {
+    public void updateDetails(JLabel albumImageLabel, JLabel albumNameLabel, JLabel releaseDateLabel, JLabel totalTracksLabel, JLabel albumIdLabel, DefaultListModel searchResultArtistModel) {
         System.out.println(getCurrentAlbum());
         String imageUrl = getCurrentAlbum().getAlbumImages().stream().filter(x -> x.getWidth() == 300).toList().get(0).getUrl();
         albumNameLabel.setText(getCurrentAlbum().getName());
         releaseDateLabel.setText(getCurrentAlbum().getReleaseDate());
         totalTracksLabel.setText(String.valueOf(getCurrentAlbum().getTotalTracks()));
         albumIdLabel.setText(getCurrentAlbum().getId());
-        artistsLabel.setText(getCurrentAlbum().getArtists().stream().map(x->x.getName() + " (" + x.getId() + ")").collect(Collectors.joining(", ")));
+
+        searchResultArtistModel.clear();
+
+        for(Artist artist : getCurrentAlbum().getArtists()){
+//            searchResultArtistModel.addElement(artist.getName() + " (" + artist.getId() + ")");
+            searchResultArtistModel.addElement(artist.getName());
+        }
+
         try {
             albumImageLabel.setIcon(new ImageIcon(new URL(imageUrl).openStream().readAllBytes()));
             albumImageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

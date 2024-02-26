@@ -221,7 +221,7 @@ public class App {
         JLabel releaseDateLabel = new JLabel();
         JLabel totalTracksLabel = new JLabel();
         JLabel albumIdLabel = new JLabel();
-        JLabel artistsLabel = new JLabel();
+//        JLabel artistsLabel = new JLabel();
 
         JPanel informationGird = new JPanel(new GridLayout(0, 2));
 
@@ -234,14 +234,22 @@ public class App {
         informationGird.add(new JLabel("totalTracks"));
         informationGird.add(totalTracksLabel);
         informationGird.add(new JLabel("Artists"));
-        informationGird.add(artistsLabel);
+//        informationGird.add(artistsLabel);
+
+        // Search Selection List
+        DefaultListModel searchResultArtistModel = new DefaultListModel();
+        JList artistsSearchResultList = new JList(searchResultArtistModel);
+        artistsSearchResultList.setFixedCellWidth(200);
+        artistsSearchResultList.setLayoutOrientation(JList.VERTICAL);
+        JScrollPane artistSearchResultScroller = new JScrollPane(artistsSearchResultList);
+        informationGird.add(artistSearchResultScroller);
 
         JPanel detailPanelVertical = new JPanel();
         detailPanelVertical.setLayout(new BoxLayout(detailPanelVertical, BoxLayout.PAGE_AXIS));
         detailPanelVertical.add(albumImageLabel);
         detailPanelVertical.add(informationGird);
 
-        // Selection List
+        // Search Selection List
         DefaultListModel defaultListModel = new DefaultListModel();
         JList jlist = new JList(defaultListModel);
         jlist.setFixedCellWidth(200);
@@ -252,7 +260,7 @@ public class App {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting()) {
                     detailService.setIndex(detailService.getIndex() == e.getLastIndex() ? e.getFirstIndex() : e.getLastIndex());
-                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel, artistsLabel);
+                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel, searchResultArtistModel);
                 }
             }
         });
@@ -260,7 +268,7 @@ public class App {
         JLabel jLabel = new JLabel("Search: ");
         JTextField textField = new JTextField(20);
 
-        JButton jButton = new JButton("Go");
+        JButton jButton = new JButton("Search");
         jButton.addActionListener(e -> {
             try {
                 if (configService.hasSpotifyCredentials()) {
@@ -277,7 +285,7 @@ public class App {
                     detailService.setAlbums(parsedResponse.getAlbums());
                     detailService.setIndex(0);
                     jlist.setSelectedIndex(0);
-                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel, artistsLabel);
+                    detailService.updateDetails(albumImageLabel, albumNameLabel, releaseDateLabel, totalTracksLabel, albumIdLabel, searchResultArtistModel);
 
                 } else {
                     JOptionPane.showMessageDialog(jFrame, "Enter spotify credentials in settings");
