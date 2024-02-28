@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 public class App {
@@ -51,6 +52,7 @@ public class App {
         String settingsExistMenuItemStr = "Exit";
         String AlbumsMenuStr = "Albums";
         String AlbumsMenuItemStr = "View All Albums";
+        String PopulateAlbumInfoStr = "Populate Album Information";
 
         JMenuBar jMenuBar = new JMenuBar();
         JMenu jSettingsMenu = new JMenu(settingsMenuStr);
@@ -59,6 +61,7 @@ public class App {
         JMenuItem mysqlMenuItem = new JMenuItem(mySQLCredentialsMenuItemStr);
         JMenuItem exitMenuItem = new JMenuItem(settingsExistMenuItemStr);
         JMenuItem AlbumsMenuItem = new JMenuItem(AlbumsMenuItemStr);
+        JMenuItem PopulateAlbumInfo = new JMenuItem(PopulateAlbumInfoStr);
         spotifyMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -207,11 +210,28 @@ public class App {
             }
         });
 
+        PopulateAlbumInfo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String token = spotifyService.getToken(
+                            configService.getConfig().getSpotifyClientId(),
+                            configService.getConfig().getSpotifyClientSecret()
+                    );
+                    spotifyService.getAlbumById(token, "4Loq4n1JyJHnW5WKKnxPhr");
+                } catch (IOException | InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
         jSettingsMenu.add(spotifyMenuItem);
         jSettingsMenu.add(mysqlMenuItem);
         jSettingsMenu.addSeparator();
         jSettingsMenu.add(exitMenuItem);
         jAlbumsMenu.add(AlbumsMenuItem);
+        jAlbumsMenu.addSeparator();
+        jAlbumsMenu.add(PopulateAlbumInfo);
         jMenuBar.add(jSettingsMenu);
         jMenuBar.add(jAlbumsMenu);
 
