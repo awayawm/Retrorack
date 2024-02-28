@@ -214,11 +214,7 @@ public class App {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String token = spotifyService.getToken(
-                            configService.getConfig().getSpotifyClientId(),
-                            configService.getConfig().getSpotifyClientSecret()
-                    );
-                    spotifyService.getAlbumById(token, "4Loq4n1JyJHnW5WKKnxPhr");
+                    spotifyService.getAlbumById(spotifyService.getToken(configService), "60MOzBSziwTNTfOuG5g9dz");
                 } catch (IOException | InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -292,12 +288,8 @@ public class App {
         jButton.addActionListener(e -> {
             try {
                 if (configService.hasSpotifyCredentials()) {
-                    String token = spotifyService.getToken(
-                            configService.getConfig().getSpotifyClientId(),
-                            configService.getConfig().getSpotifyClientSecret()
-                    );
                     String q = textField.getText();
-                    String response = spotifyService.search(token, q);
+                    String response = spotifyService.search(spotifyService.getToken(configService), q);
                     SearchResponse parsedResponse = spotifyService.parseSearchServiceResponse(response);
 
                     defaultListModel.clear();

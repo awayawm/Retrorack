@@ -1,9 +1,9 @@
 package com.atronandbeyond.Services;
 
-import com.atronandbeyond.Data.SearchResponse;
 import com.atronandbeyond.Data.Album;
 import com.atronandbeyond.Data.AlbumImage;
 import com.atronandbeyond.Data.Artist;
+import com.atronandbeyond.Data.SearchResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,7 +27,11 @@ public class SpotifyService {
     public SpotifyService() {
     }
 
-    public String getToken(String clientId, String clientSecret) throws IOException, InterruptedException {
+    public String getToken(ConfigService configService) throws IOException, InterruptedException {
+
+        String clientId = configService.getConfig().getSpotifyClientId();
+        String clientSecret = configService.getConfig().getSpotifyClientSecret();
+
         HttpClient client = HttpClient.newHttpClient();
 
         String postBody = "grant_type=client_credentials&client_id=" + clientId + "&client_secret=" + clientSecret;
