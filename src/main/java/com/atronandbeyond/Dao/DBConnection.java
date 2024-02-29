@@ -4,6 +4,8 @@ import com.atronandbeyond.Data.Album;
 import com.atronandbeyond.Data.Config;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBConnection {
     private static Connection conn;
@@ -67,7 +69,7 @@ public class DBConnection {
             ResultSet rs = ps.executeQuery();
 
 
-            int NUM_COLUMNS=5; // adjust if columns are added to ALBUMS_TABLE
+            int NUM_COLUMNS = 5; // adjust if columns are added to ALBUMS_TABLE
             Object[][] rows = new Object[count][NUM_COLUMNS];
             int rowCnt = 0;
             while (rs.next()) {
@@ -92,17 +94,19 @@ public class DBConnection {
         return 0;
     }
 
-    public static int getNonPopulatedIds(Config config) {
+    public static ArrayList<String> getNonPopulatedIds(Config config) {
+        ArrayList<String> ids = new ArrayList();
         try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
             Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery("select * from " + SEARCH_RESULT_TABLE + " search left join " + ALBUM_INFORMATION + " album on search.id=album.id where label is null");
+            ResultSet rs = statement.executeQuery("select * from " + SEARCH_RESULT_TABLE + " search left join " + ALBUM_INFORMATION + " album on search.id=album.id where label is null limit 1");
+
             while (rs.next()) {
-                System.out.println(rs.getString("id"));
+                ids.add(rs.getString("id"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+        return ids;
     }
 
 }

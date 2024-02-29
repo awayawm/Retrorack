@@ -154,7 +154,13 @@ public class SpotifyService {
     }
 
     public void getNonPopulatedIds(ConfigService configService) {
-        DBConnection.getNonPopulatedIds(configService.getConfig());
+        ArrayList<String> ids = DBConnection.getNonPopulatedIds(configService.getConfig());
+        for (String id : ids) {
+            try {
+                System.out.println(getAlbumById(getToken(configService), id));
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
-
 }
