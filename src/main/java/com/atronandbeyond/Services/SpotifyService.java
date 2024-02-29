@@ -46,7 +46,6 @@ public class SpotifyService {
         int statusCode = response.statusCode();
         String body = response.body();
 
-//        System.out.println(statusCode);
         if (statusCode != 200) {
             System.out.println(body);
         }
@@ -58,7 +57,6 @@ public class SpotifyService {
     public String search(String token, String q) throws IOException, InterruptedException {
         String search = URLEncoder.encode(q, StandardCharsets.UTF_8);
         String url = searchApi + "?q=" + search + "&type=album";
-//        System.out.println(url);
 
         HttpClient client = HttpClient.newHttpClient();
 

@@ -4,13 +4,13 @@ import com.atronandbeyond.Data.Album;
 import com.atronandbeyond.Data.Config;
 
 import java.sql.*;
-import java.util.ArrayList;
 
 public class DBConnection {
     private static Connection conn;
 
     private static String DATABASE = "retrorack";
-    private static String ALBUMS_TABLE = "rr_albums";
+    private static String SEARCH_RESULT_TABLE = "rr_search";
+    private static String ALBUM_INFORMATION = "rr_album_information";
 
     private static String getConnectionUrl(String host) {
         return "jdbc:mysql://" + host + ":3306/" + DATABASE + "?serverTimezone=UTC";
@@ -18,7 +18,7 @@ public class DBConnection {
 
     public static boolean testConnection(String host, String user, String password) {
         try (Connection conn = DriverManager.getConnection(getConnectionUrl(host), user, password);
-             PreparedStatement ps = conn.prepareStatement("select * from " + ALBUMS_TABLE);
+             PreparedStatement ps = conn.prepareStatement("select * from " + SEARCH_RESULT_TABLE);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -40,7 +40,7 @@ public class DBConnection {
         System.out.println("connecting to " + getConnectionUrl(config.getMysqlHost()));
 
         try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
-            PreparedStatement ps = conn.prepareStatement("insert into " + ALBUMS_TABLE + " (id, name, ReleaseDate, totaltracks) values (?, ?, ?, ?)");
+            PreparedStatement ps = conn.prepareStatement("insert into " + SEARCH_RESULT_TABLE + " (id, name, ReleaseDate, totaltracks) values (?, ?, ?, ?)");
             ps.setString(1, id);
             ps.setString(2, name);
             ps.setString(3, releaseDate);
@@ -58,12 +58,12 @@ public class DBConnection {
         try (Connection conn = DriverManager.getConnection(
                 getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
             Statement statement = conn.createStatement();
-            ResultSet cntRs = statement.executeQuery("select count(*) from " + ALBUMS_TABLE);
+            ResultSet cntRs = statement.executeQuery("select count(*) from " + SEARCH_RESULT_TABLE);
             cntRs.next();
             int count = cntRs.getInt(1);
             System.out.println("count: " + count);
 
-            PreparedStatement ps = conn.prepareStatement("select * from " + ALBUMS_TABLE + " order by createdate desc");
+            PreparedStatement ps = conn.prepareStatement("select * from " + SEARCH_RESULT_TABLE + " order by createdate desc");
             ResultSet rs = ps.executeQuery();
 
 
@@ -83,7 +83,7 @@ public class DBConnection {
     public static int getNumberAlbums(Config config) {
         try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
             Statement statement = conn.createStatement();
-            ResultSet cntRs = statement.executeQuery("select count(*) from " + ALBUMS_TABLE);
+            ResultSet cntRs = statement.executeQuery("select count(*) from " + SEARCH_RESULT_TABLE);
             cntRs.next();
             return cntRs.getInt(1);
         } catch (SQLException e) {
