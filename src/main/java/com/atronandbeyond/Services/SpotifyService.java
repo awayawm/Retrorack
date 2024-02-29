@@ -1,5 +1,6 @@
 package com.atronandbeyond.Services;
 
+import com.atronandbeyond.Dao.DBConnection;
 import com.atronandbeyond.Data.Album;
 import com.atronandbeyond.Data.AlbumImage;
 import com.atronandbeyond.Data.Artist;
@@ -151,4 +152,9 @@ public class SpotifyService {
 
         return searchResponse;
     }
+
+    public void getNonPopulatedIds(ConfigService configService) {
+        DBConnection.getNonPopulatedIds(configService.getConfig());
+    }
+
 }

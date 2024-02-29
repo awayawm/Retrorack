@@ -13,7 +13,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 public class App {
@@ -213,11 +212,7 @@ public class App {
         PopulateAlbumInfo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    spotifyService.getAlbumById(spotifyService.getToken(configService), "60MOzBSziwTNTfOuG5g9dz");
-                } catch (IOException | InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
+                spotifyService.getNonPopulatedIds(configService);
             }
         });
 

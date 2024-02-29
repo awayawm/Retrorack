@@ -91,4 +91,18 @@ public class DBConnection {
         }
         return 0;
     }
+
+    public static int getNonPopulatedIds(Config config) {
+        try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery("select * from " + SEARCH_RESULT_TABLE + " search left join " + ALBUM_INFORMATION + " album on search.id=album.id where label is null");
+            while (rs.next()) {
+                System.out.println(rs.getString("id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }
