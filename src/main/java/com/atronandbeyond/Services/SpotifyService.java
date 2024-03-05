@@ -70,14 +70,13 @@ public class SpotifyService {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         String body = response.body();
-        System.out.println(body);
+//        System.out.println(body);
 
         return body;
     }
 
     public String getAlbumById(String token, String id) throws IOException, InterruptedException {
         String url = albumsApi + id;
-        System.out.println(url);
 
         HttpClient client = HttpClient.newHttpClient();
 
@@ -157,6 +156,7 @@ public class SpotifyService {
         ArrayList<String> ids = DBConnection.getNonPopulatedIds(configService.getConfig());
         for (String id : ids) {
             try {
+                System.out.println("getNonPopulatedIds");
                 System.out.println(getAlbumById(getToken(configService), id));
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);

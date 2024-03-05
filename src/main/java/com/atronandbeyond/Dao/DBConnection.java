@@ -48,7 +48,7 @@ public class DBConnection {
             ps.setString(3, releaseDate);
             ps.setInt(4, totalTracks);
 
-            System.out.println(ps);
+//            System.out.println(ps);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,8 +98,7 @@ public class DBConnection {
         ArrayList<String> ids = new ArrayList();
         try (Connection conn = DriverManager.getConnection(getConnectionUrl(config.getMysqlHost()), config.getMysqlUsername(), config.getMysqlPassword())) {
             Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery("select * from " + SEARCH_RESULT_TABLE + " search left join " + ALBUM_INFORMATION + " album on search.id=album.id where label is null limit 1");
-
+            ResultSet rs = statement.executeQuery("select * from " + SEARCH_RESULT_TABLE + " search left join " + ALBUM_INFORMATION + " album on search.id=album.id where label is null order by rand() limit 1");
             while (rs.next()) {
                 ids.add(rs.getString("id"));
             }
