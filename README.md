@@ -31,3 +31,5 @@ Improve search
 * arrow buttons in search
 * different criteria
 * Search history
+
+Use MVC
